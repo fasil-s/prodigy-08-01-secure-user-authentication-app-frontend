@@ -1,10 +1,26 @@
-import { Lock, Mail, User } from "lucide-react";
+import { Eye, EyeOff, Lock, Mail, User } from "lucide-react";
+import { useState } from "react";
 
 export default function SignUpPage() {
+  const [formData, setFormData] = useState({
+    username: "",
+    email: "",
+    password: "",
+  });
+  const [showPassword, setShowPassword] = useState(false);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    console.log("Form submitted:", formData);
+  };
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-blue-200 via-white to-purple-300 px-4">
       <h1 className="text-4xl font-bold mb-4">Sign Up</h1>
-      <form className="bg-white p-6 sm:p-8 rounded-xl shadow-lg w-full max-w-md">
+      <form
+        className="bg-white p-6 sm:p-8 rounded-xl shadow-lg w-full max-w-md"
+        onSubmit={handleSubmit}
+      >
         <div className="mb-4">
           <label
             className="block text-gray-700 text-sm font-bold mb-2"
@@ -19,6 +35,10 @@ export default function SignUpPage() {
               id="username"
               className="w-full py-2 px-1 text-gray-700 leading-tight focus:outline-none bg-transparent"
               placeholder="Username"
+              value={formData.username}
+              onChange={(e) =>
+                setFormData({ ...formData, username: e.target.value })
+              }
             />
           </div>
         </div>
@@ -37,6 +57,10 @@ export default function SignUpPage() {
               id="email"
               className="w-full py-2 px-1 text-gray-700 leading-tight focus:outline-none bg-transparent"
               placeholder="Email"
+              value={formData.email}
+              onChange={(e) =>
+                setFormData({ ...formData, email: e.target.value })
+              }
             />
           </div>
         </div>
@@ -51,11 +75,26 @@ export default function SignUpPage() {
           <div className="flex items-center border rounded-full px-3 shadow focus-within:ring focus-within:ring-blue-300">
             <Lock className="text-gray-400 w-5 h-5 mr-2" />
             <input
-              type="password"
+              type={showPassword ? "text" : "password"}
               id="password"
               className="w-full py-2 px-1 text-gray-700 leading-tight focus:outline-none bg-transparent"
               placeholder="Password"
+              value={formData.password}
+              onChange={(e) =>
+                setFormData({ ...formData, password: e.target.value })
+              }
             />
+            <button
+              type="button"
+              className="text-gray-400 hover:text-gray-600 focus:outline-none"
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? (
+                <EyeOff className="w-5 h-5" />
+              ) : (
+                <Eye className="w-5 h-5" />
+              )}
+            </button>
           </div>
         </div>
 
