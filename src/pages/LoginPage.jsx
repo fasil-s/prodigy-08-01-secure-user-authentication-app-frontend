@@ -1,17 +1,21 @@
 import { Mail, Lock, EyeOff, Eye } from "lucide-react";
 import { useState } from "react";
+import { Link } from "react-router-dom";
+import { useAuthStore } from "../store/useAuthStore";
 
 export default function LoginPage() {
+  const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
-  const [showPassword, setShowPassword] = useState(false);
+
+  const { login } = useAuthStore();
   const handleSubmit = (e) => {
     e.preventDefault();
-
-    console.log("Form submitted:", formData);
+    login(formData);
   };
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-blue-200 via-white to-purple-300 px-4">
       <h1 className="text-4xl font-bold mb-4">Login</h1>
@@ -84,15 +88,15 @@ export default function LoginPage() {
           type="submit"
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full focus:outline-none focus:shadow-outline w-full"
         >
-          Sign Up
+          Sign up
         </button>
       </form>
 
       <p className="mt-4 text-gray-600">
         Don&apos;t have an account?{" "}
-        <a href="/signup" className="text-blue-500 hover:text-blue-700">
+        <Link to="/signup" className="text-blue-500 hover:text-blue-700">
           signup
-        </a>
+        </Link>
       </p>
     </div>
   );

@@ -2,29 +2,31 @@ import toast from "react-hot-toast";
 import { axiosInstance } from "../lib/axios.js";
 import { create } from "zustand";
 
-export const useAuthStore = create((set) => ({
+export const useAuthStore = create((set, get) => ({
   authUser: true,
   isLoggingIn: false,
-  isLoggingUp: false,
+  isSigningUp: false,
+  isCheckingAuth: true,
 
   signup: async (data) => {
-    set({ isLoggingUp: true });
+    set({ isSigningUp: true });
     try {
       const response = await axiosInstance.post("/auth/signup", data);
-      set({ authUser: response.data, isLoggingUp: false });
-      toast.success("Signup successful!");
+      console.log("Signup response:", response);
+      set({ authUser: response.data });
+      toast.success("Signup successfully!");
     } catch (error) {
       console.error("Signup error:", error);
-      set({ isLoggingUp: false });
+      set({ isSigningUp: false });
       toast.error("Signup failed. Please try again.");
     }
   },
   login: async (data) => {
     set({ isLoggingIn: true });
     try {
-      const response = await axios.post("/auth/login", data);
-      set({ authUser: response.data, isLoggingIn: false });
-      toast.success("Login successful!");
+      const response = await axiosInstance.post("/auth/login", data);
+      set({ authUser: response.data });
+      toast.success("Login successfully!");
     } catch (error) {
       console.error("Login error:", error);
       set({ isLoggingIn: false });
@@ -35,10 +37,22 @@ export const useAuthStore = create((set) => ({
     try {
       await axiosInstance.post("/auth/logout");
       set({ authUser: null });
-      toast.success("Logout successful!");
+      toast.success("Logout successfully!");
     } catch (error) {
       console.error("Logout error:", error);
       toast.error("Logout failed. Please try again.");
+    }
+  },
+  checkAuth: async () => {
+    try {
+      const response = await axiosInstance.get("/auth/check");
+      console.log(response);
+      set({ authUser: response.data });
+    } catch (error) {
+      console.error("Check auth error:", error);
+      set({ authUser: null });
+    } finally {
+      set({ isCheckingAuth: false });
     }
   },
 }));
