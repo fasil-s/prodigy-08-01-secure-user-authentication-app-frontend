@@ -5,6 +5,7 @@ import HomePage from "./pages/HomePage";
 import { Toaster } from "react-hot-toast";
 import { useAuthStore } from "./store/useAuthStore";
 import { useEffect } from "react";
+import ForgotPasswordPage from "./pages/FogotPassword";
 
 const app = () => {
   const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
@@ -34,6 +35,10 @@ const app = () => {
           path="/login"
           element={!authUser ? <LoginPage /> : <Navigate to={"/"} />}
         />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/verify-otp" element={<VerifyOtpPage />} />
+        <Route path="/reset-password" element={<ResetPasswordPage />} />
       </Routes>
       <Toaster />
     </div>
