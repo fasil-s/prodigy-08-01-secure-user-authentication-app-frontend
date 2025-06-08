@@ -5,7 +5,9 @@ import HomePage from "./pages/HomePage";
 import { Toaster } from "react-hot-toast";
 import { useAuthStore } from "./store/useAuthStore";
 import { useEffect } from "react";
-import ForgotPasswordPage from "./pages/FogotPassword";
+
+import ForgotPassword from "./pages/FogotPassword";
+import ResetPassword from "./pages/ResetPasswordPage";
 
 const app = () => {
   const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
@@ -13,7 +15,7 @@ const app = () => {
   useEffect(() => {
     checkAuth();
   }, [checkAuth]);
-  if (isCheckingAuth)
+  if (isCheckingAuth & !authUser)
     return (
       <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-200 via-white to-purple-300 px-4">
         Loading...
@@ -35,10 +37,8 @@ const app = () => {
           path="/login"
           element={!authUser ? <LoginPage /> : <Navigate to={"/"} />}
         />
-        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-        <Route path="/verify-otp" element={<VerifyOtpPage />} />
-        <Route path="/reset-password" element={<ResetPasswordPage />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password/:token" element={<ResetPassword />} />
       </Routes>
       <Toaster />
     </div>

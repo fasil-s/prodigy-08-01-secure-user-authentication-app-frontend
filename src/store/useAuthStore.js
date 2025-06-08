@@ -46,13 +46,56 @@ export const useAuthStore = create((set, get) => ({
   checkAuth: async () => {
     try {
       const response = await axiosInstance.get("/auth/check");
-      console.log(response);
+
       set({ authUser: response.data });
     } catch (error) {
       console.error("Check auth error:", error);
       set({ authUser: null });
     } finally {
       set({ isCheckingAuth: false });
+    }
+  },
+
+  forgotPassword: async (email) => {
+    try {
+      const response = await axiosInstance.post("/auth/forgot-password", {
+        email,
+      });
+      toast.success(response.data.message || "Reset link sent to your email!");
+    } catch (error) {
+      console.error("Forgot password error:", error);
+      toast.error(
+        error?.response?.data?.message || "Failed to send reset link."
+      );
+    }
+  },
+
+  verifyResetToken: async (token) => {
+    try {
+      const response = await axiosInstance.get(`/auth/reset-password/${token}`);
+      toast.success(response.data.message || "Token is valid.");
+      return true;
+    } catch (error) {
+      console.error("Verify token error:", error);
+      toast.error(
+        error?.response?.data?.message || "Invalid or expired token."
+      );
+      return false;
+    }
+  },
+
+  resetPassword: async ({ token, newPassword }) => {
+    try {
+      const response = await axiosInstance.post(
+        `/auth/reset-password/${token}`,
+        {
+          newPassword,
+        }
+      );
+      toast.success(response.data.message || "Password reset successfully!");
+    } catch (error) {
+      console.error("Reset password error:", error);
+      toast.error(error?.response?.data?.message || "Password reset failed.");
     }
   },
 }));

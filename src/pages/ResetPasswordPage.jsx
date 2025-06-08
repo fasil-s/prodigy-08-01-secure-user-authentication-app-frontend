@@ -1,63 +1,75 @@
-import { Lock } from "lucide-react";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { useAuthStore } from "../store/useAuthStore";
+import { toast } from "react-hot-toast";
 
-export default function ResetPasswordPage() {
+const ResetPasswordPage = () => {
   const [newPassword, setNewPassword] = useState("");
-  const [message, setMessage] = useState("");
-  const email = localStorage.getItem("resetEmail");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const { token } = useParams();
   const navigate = useNavigate();
+  const { verifyResetToken, resetPassword } = useAuthStore();
+
+  useEffect(() => {
+    if (token) {
+      verifyResetToken(token);
+    }
+  }, [token, verifyResetToken]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const res = await fetch("/reset-password", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, newPassword }),
-    });
 
-    const data = await res.json();
-    if (res.ok) {
-      setMessage("Password reset successful. Redirecting to login...");
-      localStorage.removeItem("resetEmail");
-      setTimeout(() => navigate("/login"), 2000);
-    } else {
-      setMessage(data.message);
+    if (newPassword.length < 6) {
+      return toast.error("Password must be at least 6 characters.");
     }
+
+    if (newPassword !== confirmPassword) {
+      return toast.error("Passwords do not match.");
+    }
+
+    await resetPassword({ token, newPassword });
+    navigate("/login");
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-blue-200 via-white to-purple-300 px-4">
-      <h1 className="text-3xl font-bold mb-4">Reset Password</h1>
-      <form
-        className="bg-white p-6 sm:p-8 rounded-xl shadow-lg w-full max-w-md"
-        onSubmit={handleSubmit}
-      >
-        <div className="mb-4">
-          <label htmlFor="newPassword" className="text-sm font-bold text-gray-700 mb-2 block">
-            New Password
-          </label>
-          <div className="flex items-center border rounded-full px-3 shadow focus-within:ring focus-within:ring-blue-300">
-            <Lock className="text-gray-400 w-5 h-5 mr-2" />
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-200 via-white to-purple-300 px-4">
+      <div className="bg-white rounded-2xl shadow-lg p-8 w-full max-w-md">
+        <h2 className="text-2xl font-bold text-center mb-6">Reset Password</h2>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              New Password
+            </label>
             <input
               type="password"
-              id="newPassword"
-              className="w-full py-2 px-1 text-gray-700 bg-transparent focus:outline-none"
               placeholder="Enter new password"
+              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
-              required
             />
           </div>
-        </div>
-        <button
-          type="submit"
-          className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-full w-full"
-        >
-          Reset Password
-        </button>
-        {message && <p className="mt-2 text-sm text-gray-600">{message}</p>}
-      </form>
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              Confirm Password
+            </label>
+            <input
+              type="password"
+              placeholder="Confirm new password"
+              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+            />
+          </div>
+          <button
+            type="submit"
+            className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg transition"
+          >
+            Reset Password
+          </button>
+        </form>
+      </div>
     </div>
   );
-}
+};
+
+export default ResetPasswordPage;
